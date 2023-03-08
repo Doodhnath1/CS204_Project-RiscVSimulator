@@ -33,7 +33,7 @@ int main(){
     pair_of_instr_type_opcode[0100011]='S';
     pair_of_instr_type_opcode[1100011]='B';
     pair_of_instr_type_opcode[1101111]='J';
-    pair_of_instr_type_opcode[1100011]='B';
+    pair_of_instr_type_opcode[0110111]='U';
     
 
     //taking instruction from mc dumb file
