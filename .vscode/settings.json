@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.js": "javascriptreact",
+        "__tree": "cpp",
+        "map": "cpp"
+    }
+}
