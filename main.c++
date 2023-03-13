@@ -342,3 +342,15 @@ int find_immed(char instruction_type){
     // cout<<"Immediate is of type  "<<instruction_type<<"the value is : "<<immed;
     return immed;
 }
+
+
+//function to run single phase risc-v simulator
+void RiscVSimulator(){
+        fetch();
+        decode();
+        execute();
+        memory();
+        write_back();
+       
+};
+
