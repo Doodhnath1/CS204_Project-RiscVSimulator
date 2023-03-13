@@ -130,3 +130,215 @@ int main(){
     }
     
 }
+
+//function for finding funct3
+int find_func3(){
+    int func3=0,mul=1;
+    for(int i=12;i<=14;i++){
+
+        if(fetchResult[i]!=0){
+            func3=func3+mul;
+        }
+        mul*=2;
+    }
+    // cout<<"func3 : "<<func3;
+    return func3;
+}
+//evaluates func7 value;
+int find_func7(){
+    int func7=0,mul=1;
+    for(int i=25;i<=31;i++){
+
+        if(fetchResult[i]!=0){
+            func7=func7+mul;
+        }
+        mul*=2;
+    }
+    // cout<<"func7 : "<<func7;
+    return func7;
+}
+
+//evaluates opcode
+string find_opcode(){
+    string opcode="";
+    for(int i=6;i>=0;i--){
+        if(fetchResult[i]==0){
+            opcode+='0';
+        }else{
+           opcode+='1';
+        }
+        
+           
+        
+    }
+    // cout<<"OPcode : "<<opcode<<" ";
+    return opcode;
+}
+
+//evaluates source register 1
+int find_rs1(){
+    int rs1=0, mul=1;
+    for(int i=15;i<=19;i++){
+        if(fetchResult[i]!=0){
+            rs1=rs1+mul;
+        }
+        mul*=2;
+    }
+    
+    // cout<<"rs1 : "<<rs1;
+    return rs1;
+}
+
+//evaluates source register 2
+int find_rs2(){
+    int rs2=0, mul=1;
+    for(int i=20;i<=24;i++){
+        if(fetchResult[i]!=0){
+            rs2=rs2+mul;
+        }
+        mul*=2;
+    }
+    // cout<<"rs2 : "<<rs2;
+    return rs2;
+}
+
+//evaluates destination register
+int find_rd(){
+    int rd=0, mul=1;
+    for(int i=7;i<=11;i++){
+        if(fetchResult[i]!=0){
+            rd=rd+mul;
+        }
+        mul*=2;
+    }
+    // cout<<"rd : "<<rd;
+    return rd;
+}
+
+//evaluates immediate
+int find_immed(char instruction_type){
+    int immed=0,mul=1;
+    switch (instruction_type)
+    {
+    case 'R':
+        
+        break;
+    case 'I':
+
+        for(int i=20;i<=31;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;
+            }
+            mul*=2;
+        }
+        if(fetchResult[31]==1){
+            immed-=4096;
+        }
+        break;
+    case 'S':
+
+        for(int i=7;i<=11;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;
+            }
+            mul*=2;
+        }
+        for(int i=25;i<=31;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;    
+            }
+            mul*=2;
+        }
+        if(fetchResult[31]==1){
+            immed-=4096;
+        }
+        break;
+    
+    case 'B':
+
+        for(int i=8;i<=11;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;
+            }
+            mul*=2;
+        }
+        for(int i=25;i<=30;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;    
+            }
+            mul*=2;
+        }
+        for(int i=7;i<=7;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;    
+            }
+            mul*=2;
+        }
+        for(int i=31;i<=31;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;    
+            }
+            mul*=2;
+        }
+        immed<<=1;
+        if(fetchResult[31]==1){
+            immed-=4096*2;
+        }
+        break;
+    case 'U':
+
+        for(int i=12;i<=31;i++){
+            if(fetchResult[i]!=0){
+                immed=immed+mul;
+            }
+            mul*=2;
+        }
+        if(fetchResult[31]==1){
+            immed-=1048576;
+        }
+        break;
+    
+    case 'J':
+            if (opcode=="1101111"){
+            for(int i=21;i<=30;i++){
+                if(fetchResult[i]!=0){
+                    immed=immed+mul;
+                }
+                mul*=2;
+            }
+            for(int i=20;i<=20;i++){
+                if(fetchResult[i]!=0){
+                    immed=immed+mul;
+                }
+                mul*=2;
+            }
+            for(int i=12;i<=19;i++){
+                if(fetchResult[i]!=0){
+                    immed=immed+mul;
+                }
+                mul*=2;
+            }
+            for(int i=31;i<=31;i++){
+                if(fetchResult[i]!=0){
+                    immed=immed+mul;
+                }
+                mul*=2;
+            }
+            //left shift to ensure - 0th bit is aligned;
+            immed<<=1;
+            // cout<<"Immediat: "<<immed<<endl;
+            if(fetchResult[31]==1){
+                immed-=1048576*2;
+            }
+        }else{
+            cout<<"error in Jal instruction";
+        }
+
+        break;
+    default:
+        break;
+    }
+    // cout<<"opcode is "<< opcode;
+    // cout<<"Immediate is of type  "<<instruction_type<<"the value is : "<<immed;
+    return immed;
+}
