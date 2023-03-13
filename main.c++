@@ -354,3 +354,244 @@ void RiscVSimulator(){
        
 };
 
+//hex 2 binary 
+string hex2bin(string s){
+     string binary_num = "";
+
+    for (int i = 0; i < s.length(); i++) {
+        switch (s[i]) {
+            case '0': binary_num += "0000"; break;
+            case '1': binary_num += "0001"; break;
+            case '2': binary_num += "0010"; break;
+            case '3': binary_num += "0011"; break;
+            case '4': binary_num += "0100"; break;
+            case '5': binary_num += "0101"; break;
+            case '6': binary_num += "0110"; break;
+            case '7': binary_num += "0111"; break;
+            case '8': binary_num += "1000"; break;
+            case '9': binary_num += "1001"; break;
+            case 'A': case 'a': binary_num += "1010"; break;
+            case 'B': case 'b': binary_num += "1011"; break;
+            case 'C': case 'c': binary_num += "1100"; break;
+            case 'D': case 'd': binary_num += "1101"; break;
+            case 'E': case 'e': binary_num += "1110"; break;
+            case 'F': case 'f': binary_num += "1111"; break;
+            default:
+                return "";
+        }
+    }
+    return binary_num;
+
+}
+
+
+
+void memory(){
+    if(instr_type=='I' && opcode=="0000011"){
+        //at this point aluop_result will carry the location of the memory
+        aluop_result = main_mem[aluop_result];
+        cout<<"MEMORY: "<<alu_op<<" operation is performed in the memory, loaded value ( in op2): "<<aluop_result<<endl;
+    }
+    else if(instr_type=='S'){
+        //at this point aluop_result will carry the location of the memory
+        main_mem[aluop_result]=op2;
+        cout<<"MEMORY: "<<alu_op<<" operation is performed in the memory, stored value (of op2): "<<op2<<endl;
+    }else{
+        cout<<"MEMORY: No memory operation to perform.\n";
+    }
+
+    // for(int i=0;i<=51;i++){
+    //     cout<<main_mem[4*i-1]<<" ";
+    // }
+}
+
+void write_back(){
+    
+
+    if(instr_type!='S' && instr_type!='B' && rd!=0){
+        registerFile[rd]=aluop_result;
+        cout<<"WRITEBACK: writing "<<aluop_result<<" to "<<"Register R"<<find_rd()<<endl;
+        cout<<endl;
+    }else{
+        cout<<"WRITEBACK: No write back! "<<endl;
+        cout<<endl;
+    }
+//     cout<<"===========Initial============="<<endl;
+   
+//    for(int i=0;i<=100;i++){
+//         cout<<"{ "<<i<< " : "<<main_mem[i]<<"} ";
+//     }
+//     cout<<endl;
+//     for(int i=100;i<200;i++){
+//         cout<<"{ "<<i<< " : "<<main_mem[i]<<"} ";
+//     }
+//     cout<<endl;
+//     for (int i=0;i<32;i++) {
+//         cout<<"{ "<<i<< " : "<<registerFile[i]<<"} ";
+//     }
+//     cout<<endl;
+//      cout<<"===========Final============="<<endl;
+    }
+
+
+
+
+void execute(){
+    
+    if(alu_op=="add"){
+        aluop_result = op1+op2;
+    }
+    else if(alu_op=="sub"){
+        aluop_result = op1-op2;
+    }
+    else if(alu_op=="xor"){
+        aluop_result = op1^op2;
+    }
+    else if(alu_op=="or"){
+        aluop_result = op1|op2;
+    }
+    else if(alu_op=="and"){
+        aluop_result = op1&op2;
+    }
+    else if(alu_op=="sll"){
+        aluop_result = op1<<op2;
+    }
+    else if(alu_op=="srl"){
+        aluop_result = op1>>op2;
+    }
+    else if(alu_op=="sra"){
+        aluop_result = op1>>op2;
+    }
+    else if(alu_op=="slt"){
+        aluop_result = (rs1 < rs2)?1:0;
+    }
+
+
+    //immediate starts
+    else if(alu_op=="addi"){
+        aluop_result = op1+immediate;
+    }
+    else if(alu_op=="subi"){
+        aluop_result = op1-immediate;
+    }
+    else if(alu_op=="xori"){
+        aluop_result = op1^immediate;
+    }
+    else if(alu_op=="ori"){
+        aluop_result = op1|immediate;
+    }
+    else if(alu_op=="andi"){
+        aluop_result = op1&immediate;
+    }
+    else if(alu_op=="slli"){
+        aluop_result = op1<<immediate;
+    }
+    else if(alu_op=="srli"){
+        aluop_result = op1>>immediate;
+    }
+    else if(alu_op=="srai"){
+        aluop_result = op1>>immediate;
+    }
+    else if(alu_op=="slti"){
+        aluop_result = (rs1 <immediate)?1:0;
+    }
+    else if (alu_op=="jalr"){
+        isBranchTaken=1;
+        branchPc = op1+immediate;
+        aluop_result=pc+4;
+    }
+
+    // load instructions execution
+    else if(alu_op=="load_byte"){
+        int newImmed= (~((~0)<<8))&immediate;
+        aluop_result = op1 + newImmed;
+
+    }
+    else if(alu_op=="load_half"){
+        int newImmed= (~((~0)<<16))&immediate;
+        aluop_result = op1 + newImmed;
+
+    }
+    else if(alu_op=="load_word"){
+        aluop_result = op1 + immediate;
+        cout<<" aluop_result "<<aluop_result<<op1<<" "<<immediate<<endl;
+
+    }
+
+
+    // store instructions execution
+    else if(alu_op=="store_byte"){
+        int newImmed= (~((~0)<<8))&immediate;
+        aluop_result = op1 + newImmed;
+
+    }
+    else if(alu_op=="store_half"){
+        int newImmed= (~((~0)<<16))&immediate;
+        aluop_result = op1 + newImmed;
+
+    }
+    else if(alu_op=="store_word"){
+        aluop_result = op1 + immediate;
+
+    }
+
+    //branch starts
+    else if(alu_op=="beq"){
+        if(op1==op2){
+            isBranchTaken=1;
+        }
+        branchPc = pc+immediate;
+    }
+    else if(alu_op=="bne"){
+        if(op1!=op2){
+            isBranchTaken=1;
+        }
+        branchPc = pc+immediate;
+    }
+    else if(alu_op=="blt"){
+        if(op1<op2){
+            isBranchTaken=1;
+        }
+        branchPc = pc+immediate;
+    }
+    else if(alu_op=="bge"){
+        cout<<"op1 is "<<op1<<" "<<"op2 is "<<op2<<endl;
+        if(op1>=op2){
+            isBranchTaken=1;
+        }
+        branchPc = pc+immediate;
+    }
+
+    //jal starts
+    else if(alu_op=="jal"){
+        isBranchTaken=1;
+        branchPc=pc+immediate;
+        aluop_result=pc+4;
+    }
+
+    //lui and auipc
+
+    else if(alu_op=="lui"){
+        aluop_result=immediate<<12;
+    }
+    else if(alu_op=="auipc"){
+        aluop_result=pc+(immediate<<12);
+    }
+    else{
+        cout<<"EXECUTE: pls check there is some error! "<<endl;
+    }
+
+    cout<<"First PC IS "<<pc<<endl;
+    cout<<"EXECUTE: Alu Operation : "<<alu_op<<" "<<" Operation Result : "<<aluop_result<<endl;
+    //branch selection decision
+     if(isBranchTaken){
+            pc=branchPc;
+             cout<<"EXECUTE: Branch is taken"<<endl;
+    }else{
+            pc=nextPc;
+            cout<<"EXECUTE: Branch is not taken"<<endl;
+    }
+    isBranchTaken=0;
+    cout<<"Second PC IS "<<pc<<endl;
+}
+
