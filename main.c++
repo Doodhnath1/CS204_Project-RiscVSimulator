@@ -595,3 +595,180 @@ void execute(){
     cout<<"Second PC IS "<<pc<<endl;
 }
 
+void fetch(){
+    string current_instruction=instructrion_memory_map[pc];
+    string s=hex2bin(current_instruction);
+    bitset<M> bset1(s);
+    cout<<"FETCH: Instruction  "<<current_instruction<<" fetched from address "<<"0x"<<pc;
+    fetchResult=bset1;
+    nextPc=pc+4;
+};
+
+void decode(){
+    opcode=find_opcode();
+    int func3=find_func3();
+    int func7=find_func7();
+    cout<<endl;
+    instr_type=pair_of_instr_type_opcode[opcode];
+    switch (instr_type)
+    {
+    case 'R':
+        if(func3==0){
+            if(func7==0){
+                alu_op="add";
+            }else if(func7==32){
+                alu_op="sub";
+            }else{
+                alu_op="error";
+                cout<<"Error in R type add or sub operation";
+            }
+        }else if(func3==4){
+            alu_op="xor";
+        }else if(func3==6){
+            alu_op="or";
+        }else if(func3==7){
+            alu_op="and";
+        }else if(func3==1){
+            alu_op="sll";
+        }else if(func3==5){
+            if(func7==0){
+                alu_op="srl";
+            }else{
+                alu_op="sra";
+            }
+        }else if(func3==2){
+            alu_op="slt";
+        }
+        cout<<"DECODE: Operation is "<<alu_op<<" first operand R"<<find_rs1()<< " Second operand R"<<find_rs2()<< " destination register R"<<find_rd()<<endl;
+        break;
+        
+    case 'I':
+        if(opcode=="0010011"){
+                if(func3==0){
+                alu_op="addi";   
+            }else if(func3==4){
+                alu_op="xori";
+            }else if(func3==6){
+                alu_op="ori";
+            }else if(func3==7){
+                alu_op="andi";
+            }else if(func3==1){
+                alu_op="slli";
+            }else if(func3==5){
+                if(func7==0){
+                    alu_op="srli";
+                }else{
+                    alu_op="srai";
+                }
+            }else if(func3==2){
+                alu_op="slti";
+            } 
+        }else if(opcode=="0000011"){
+            //load 
+            if (func3==0) {
+                alu_op="load_byte";
+            } else if (func3==1) {
+                alu_op="load_half";
+            } else if (func3==2) {
+                alu_op="load_word";
+            }  
+        }else if(opcode=="1100111"){
+                alu_op="jalr";
+        }
+         cout<<"DECODE: Operation is "<<alu_op<<" first operand R"<<find_rs1()<< " Immediate "<<find_immed('I')<< " destination register R"<<find_rd()<<endl;
+        break;
+
+    //store
+    case 'S':
+        if (func3==0) {
+            alu_op="store_byte";
+        } else if (func3==1) {
+            alu_op="store_half";
+        } else if (func3==2) {
+            alu_op="store_word";
+        }
+        cout<<"DECODE: Operation is "<<alu_op<<" first operand R"<<find_rs1()<< " Second operand R"<<find_rs2()<< " Immediate "<<find_immed('S')<<endl;
+        break; 
+  
+    //branch
+    case 'B':
+        if(func3==0){
+            alu_op="beq";
+        }
+        else if(func3==1){
+            alu_op="bne";
+        }
+        else if(func3==4){
+            alu_op="blt";
+        }
+        else if(func3==5){
+            alu_op="bge";
+        }
+        else{
+            alu_op="error";
+        }
+        cout<<"DECODE: Operation is "<<alu_op<<" first operand R"<<find_rs1()<< " Second operand R"<<find_rs2()<< " Immediate "<<find_immed('B')<<endl;
+        break;
+    case 'J': 
+        if(opcode=="1101111") {
+            alu_op="jal";
+            cout<<"DECODE: Operation is "<<alu_op<<" Destination Register is R"<<find_rd()<<  " Immediate "<<find_immed('J')<<endl;
+        }
+        break;
+    case 'U':
+        if(opcode=="0110111") {
+            alu_op="lui";
+        }else{
+            alu_op="auipc";
+        }
+        cout<<"DECODE: Operation is "<<alu_op<<" Destination Register is R"<<find_rd()<<  " Immediate "<<find_immed('U')<<endl;
+        break;
+    default:
+        break;
+    }
+     rs1 = find_rs1();
+     rs2 = find_rs2();
+
+     rd = find_rd();
+     immediate = find_immed(instr_type);
+    op1=registerFile[rs1];
+    op2=registerFile[rs2];
+    cout<<"func3 : "<<func3<<" func7 : "<<func7<<endl;
+    
+}
+
+string dec2hex(){
+    char hexadecimal[100];
+    string s;
+    int quotient, remainder;
+    int i = 0;
+    int decimal=pc;
+    while (decimal > 0)
+    {
+        quotient = decimal / 16;
+        remainder = decimal % 16;
+
+        if (remainder < 10)
+        {
+            hexadecimal[i] = remainder + 48;
+            i++;
+        }
+        else
+        {
+            hexadecimal[i] = remainder + 55;
+            i++;
+        }
+
+        decimal = quotient;
+    }
+
+    reverse(hexadecimal, hexadecimal + i);
+
+    cout << "The hexadecimal equivalent is: ";
+    for (int j = 0; j < i; j++){
+        s+=hexadecimal[j];
+    }
+        cout<<s;
+
+    return s;
+}
